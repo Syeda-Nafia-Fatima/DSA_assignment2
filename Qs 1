@@ -1,0 +1,104 @@
+#include <iostream>
+#include <stdlib.h>
+
+using namespace std;
+
+struct node{
+    int id;
+    struct node*next=NULL;
+}
+struct node*start=NULL;
+
+void ADD(int num){
+    struct node*temp=(struct node*)malloc(sizeof(struct node));
+    temp->id=num;
+    temp->next=NULL;
+    if (start==NULL){
+        start=temp;
+    }
+    else{
+        struct node*curr=start;
+        while(curr->next!=NULL){
+        curr=curr->next;
+    }
+    curr->next=temp;
+    }
+}
+
+void DELETE(){
+    if (start == NULL) {
+        cout << "List is empty. Nothing to delete." << endl;
+        return;
+    }
+
+    if (start->next == NULL) {
+        free(start);
+        start = NULL;
+        cout << "Deleted the only node in the list." << endl;
+    } else {
+        struct node* curr = start;
+        struct node* prev = NULL;
+
+        while (curr->next != NULL) {
+            prev = curr;
+            curr = curr->next;
+        }
+
+        free(curr);
+        prev->next = NULL;
+        cout << "Deleted the last node in the list." << endl;
+    }
+    
+}
+
+void GetTrump() {
+    if (start == NULL) {
+        cout << "No customers." << endl;
+        return;
+    }
+
+    struct node* slow = start;
+    struct node* fast = start;
+
+    while (fast != NULL && fast->next != NULL) {
+        slow = slow->next;
+        fast = fast->next->next;
+    }
+
+    if (fast == NULL) {
+        // Odd number of customers, print the middle number
+        cout << "The middle customer is: " << slow->id << endl;
+    } else {
+        // Even number of customers, print the two middle numbers
+        cout << "The middle customers are: " << slow->id << " and " << slow->next->id << endl;
+    }
+}
+
+int main() {
+    ifstream inputFile("input.txt");
+    if (!inputFile.is_open()) {
+        cout << "Failed to open the input file." << endl;
+        return 1;
+    }
+
+    string command;
+    int num;
+
+    while (inputFile >> command) {
+        if (command == "ADD") {
+            inputFile >> num;
+            ADD(num);
+        } else if (command == "DELETE") {
+            DELETE();
+        } else if (command == "END") {
+            break;
+        }
+    }
+
+    inputFile.close();
+
+    // Get the middle customer(s) as the winner
+    GetTrump();
+
+    return 0;
+}
