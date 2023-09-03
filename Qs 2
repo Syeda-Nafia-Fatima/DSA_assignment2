@@ -1,0 +1,88 @@
+#include <iostream>
+#include <fstream>
+
+using namespace std;
+
+struct Node {
+    int num;
+    struct Node* next = NULL;
+};
+
+struct Node* start = NULL;
+
+void insert(int newdata) {
+    // inserting the incoming data in the linked list
+    struct Node* newNode = new Node();
+    newNode->num = newdata;
+    newNode->next = start;
+    start = newNode;
+}
+
+void bubbleSort() {
+    if (start == NULL || start->next == NULL) {
+        return; // empty list or one element
+    }
+    bool swapped;
+    struct Node* current;
+    struct Node* lastSorted = NULL;
+
+    do {
+        swapped = false;
+        current = start;
+        struct Node* prev = nullptr;
+
+        while (current->next != lastSorted) {
+            if (current->num > current->next->num) {
+                // Swap current and current->next
+                int temp = current->num;
+                current->num = current->next->num;
+                current->next->num = temp;
+                swapped = true;
+            }
+            prev = current;
+            current = current->next;
+        }
+        lastSorted = prev;
+    } while (swapped);
+}
+
+double calculateMedian() {
+    if (start == NULL) {
+        cout << "No element.";
+        return 0.0;
+    }
+
+    struct Node* slow = start;
+    struct Node* fast = start;
+    struct Node* prev = start;
+
+    while (fast != NULL && fast->next != NULL) {
+        prev = slow;
+        slow = slow->next;
+        fast = fast->next->next;
+    }
+
+    if (fast == NULL) {
+        // Even number of elements, return the average of two middle numbers
+        return (prev->num + slow->num) / 2.0;
+    } else {
+        // Odd number of elements, return the middle number
+        return slow->num;
+    }
+}
+
+int main() {
+    ifstream inputFile("input.txt"); // Replace "input.txt" with your input file name
+    int num;
+
+    while (inputFile >> num) {
+        insert(num);
+        bubbleSort();
+        double medianValue = calculateMedian();
+        cout << "Median after inserting " << num << ": " << medianValue << endl;
+    }
+
+    inputFile.close();
+
+    return 0;
+}
