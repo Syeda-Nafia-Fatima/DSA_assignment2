@@ -1,0 +1,93 @@
+#include <iostream>
+#include <fstream>
+#include <unordered_set>
+
+struct TransactionNode {
+    int transactionId;
+    int transactionAmount;
+    TransactionNode* next;
+
+    TransactionNode(int id, int amount) : transactionId(id), transactionAmount(amount), next(nullptr) {}
+};
+
+class TransactionList {
+private:
+    TransactionNode* head;
+
+public:
+    TransactionList() : head(nullptr) {}
+
+    void insert(int id, int amount) {
+        TransactionNode* newNode = new TransactionNode(id, amount);
+        newNode->next = head;
+        head = newNode;
+    }
+
+    void print() {
+        TransactionNode* current = head;
+        while (current != nullptr) {
+            std::cout << current->transactionId << "," << current->transactionAmount << std::endl;
+            current = current->next;
+        }
+    }
+
+    void reverseFraudulentTransactions(const std::unordered_set<int>& fraudulentIds) {
+        TransactionNode* current = head;
+        TransactionNode* prev = nullptr;
+
+        while (current != nullptr) {
+            if (fraudulentIds.find(current->transactionId) != fraudulentIds.end()) {
+                // Skip fraudulent transactions
+                TransactionNode* temp = current;
+                current = current->next;
+                if (prev == nullptr) {
+                    head = current;
+                } else {
+                    prev->next = current;
+                }
+                delete temp;
+            } else {
+                prev = current;
+                current = current->next;
+            }
+        }
+    }
+};
+
+int main() {
+    std::ifstream inputFile("input.txt");
+    if (!inputFile.is_open()) {
+        std::cerr << "Failed to open the input file." << std::endl;
+        return 1;
+    }
+
+    int numberOfTransactions, numberOfFraudulentTransactions;
+    inputFile >> numberOfTransactions >> numberOfFraudulentTransactions;
+
+    TransactionList transactionList;
+
+    for (int i = 0; i < numberOfTransactions; i++) {
+        int transactionId, transactionAmount;
+        inputFile >> transactionId >> transactionAmount;
+        transactionList.insert(transactionId, transactionAmount);
+    }
+
+    std::unordered_set<int> fraudulentIds;
+    for (int i = 0; i < numberOfFraudulentTransactions; i++) {
+        int fraudulentId;
+        inputFile >> fraudulentId;
+        fraudulentIds.insert(fraudulentId);
+    }
+
+    inputFile.close();
+
+    std::cout << "Original transactions:" << std::endl;
+    transactionList.print();
+
+    transactionList.reverseFraudulentTransactions(fraudulentIds);
+
+    std::cout << "Transactions after reversing fraudulent ones:" << std::endl;
+    transactionList.print();
+
+    return 0;
+}
