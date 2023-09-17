@@ -72,7 +72,7 @@ double calculateMedian() {
 }
 
 int main() {
-    ifstream inputFile("input.txt"); // Replace "input.txt" with your input file name
+    ifstream inputFile("input.txt"); 
     int num;
 
     while (inputFile >> num) {
