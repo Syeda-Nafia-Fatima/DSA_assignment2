@@ -1,0 +1,40 @@
+int main() {
+    // Open the test file for reading
+    std::ifstream testFile("testfile01.txt");
+    if (!testFile.is_open()) {
+        std::cout << "Failed to open the test file." << std::endl;
+        return 1;
+    }
+
+    int num;
+    ListNode* head = nullptr; // Initialize the linked list head
+
+    // Read integers from the file and insert them into the linked list
+    while (testFile >> num) {
+        if (head == nullptr) {
+            head = new ListNode(num);
+        }
+        else {
+            ListNode* current = head;
+            while (current->next != nullptr) {
+                current = current->next;
+            }
+            current->next = new ListNode(num);
+        }
+    }
+
+    testFile.close(); // Close the file after reading
+
+    // Find the third last element in the linked list
+    int thirdLastElement = findThirdLast(head);
+    if (thirdLastElement != -1) {
+        std::cout << "Third last element: " << thirdLastElement << std::endl;
+    }
+    else {
+        std::cout << "The linked list has less than 3 elements." << std::endl;
+    }
+
+  
+
+    return 0;
+}
